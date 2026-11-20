@@ -1,7 +1,7 @@
 # Handoff Guide — Member 01 (Mishael): Complete Build Status & Demo-Day Checklist
 
 - **Human Member**: Mishael (`member-01`)
-- **Project**: **AegisOps** (`https://github.com/MishaelJulian/aegisops`) — *"Observe everything. Expose nothing."*
+- **Project**: **AegisOps** (`https://github.com/MishaelJulian/aegisops-demo`) — *"Observe everything. Expose nothing."*
 - **Status**: **ALL 4 PHASES BUILT, VERIFIED, AUDITED & PUSHED TO `main` AND `integration`**
 
 ---

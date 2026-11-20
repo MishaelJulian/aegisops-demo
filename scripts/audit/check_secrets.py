@@ -54,9 +54,34 @@ SECRET_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
 
 
 def scan_repository() -> tuple[bool, list[str]]:
+    import subprocess
+
     findings: list[str] = []
 
-    for path in REPO_ROOT.rglob("*"):
+    # Check tracked + staged + non-ignored untracked files via git when inside a repo
+    # so gitignored local runtime SQLite databases in collector/data/ or backend/data/
+    # do not block pushes while running dev servers, yet any tracked/staged .db or .env ALWAYS fails.
+    candidate_paths: list[Path] = []
+    proc = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode == 0:
+        for line in proc.stdout.splitlines():
+            rel_str = line.strip()
+            if rel_str:
+                p = REPO_ROOT / rel_str
+                if p.is_file():
+                    candidate_paths.append(p)
+    else:
+        for p in REPO_ROOT.rglob("*"):
+            if not any(part in IGNORED_DIRS for part in p.parts) and p.is_file():
+                candidate_paths.append(p)
+
+    for path in candidate_paths:
         if any(part in IGNORED_DIRS for part in path.parts):
             continue
         if not path.is_file():
